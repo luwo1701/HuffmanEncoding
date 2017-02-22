@@ -18,6 +18,7 @@ def huffmanEncode(S,f):
         H = []
         n = len(f)
         for i in range(1,n+1):
+            if f[i] != 0:
                 H.insert(i,f[i])
         for k in range(n+1,2*n):
                 i = H.deletemin(), j = H.deletemin()
