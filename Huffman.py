@@ -1,26 +1,77 @@
-inputString="AAABBBBBBBBCCDEFFFFFFGIIIIJJz"
-
 class Tree:
-	def __init__(self, cargo, left=None, right=None):
-		self.cargo = cargo
-		self.left  = left
-		self.right = right
+    def __init__(self, cargo, left=None, right=None):
+        self.cargo = cargo
+        self.left  = left
+        self.right = right
 
-		def __str__(self):
-			return str(self.cargo)
+    def __str__(self):
+        return str(self.cargo)
 
-# must be able to look through alphabet and other unique characters
-# is also case sensitive
+def delMin(H):
+	global currentSize
+	
+	retval = H[1]
+	
+	H[1] = H[currentSize]
+	# print 'this is H1',H
+	# print
+	# print 'currentSize in delMin1', currentSize
+	# print
+	currentSize = currentSize - 1
+	# print 'currentSize in delMin2', currentSize
+	# print
+	H.pop()
+	# print 'this is H2 after pop',H
+	# print
+	percDown(1)
 
-# print the histogram and then number of unique characters in the string
+	return retval
 
+def percDown(i):
+	    while (i * 2) <= currentSize:
+	    	# print 'this is currentSize',currentSize
+	    	# print
+	        mc = minChild(i)
+	        # print 'this is mc',mc
+	        # print
+	        if H[i][1] > H[mc][1]:
+	            tmp = H[i]
+	            H[i] = H[mc]
+	            H[mc] = tmp
+	        i = mc
 
+def minChild(i):
+	    if i * 2 + 1 > currentSize:
+	        return i * 2
+	    else:
+	    	# print 'this is i in minChild', i
+	    	# print
+	        if H[i*2][1] < H[i*2+1][1]:
+	            return i * 2
+	        else:
+	            return i * 2 + 1
+
+def percUp(i):
+	while i // 2 > 0:
+		if H[i][1] < H[i // 2][1]:
+			tmp = H[i // 2]
+			H[i // 2] = H[i]
+			H[i] = tmp
+		i = i // 2
+
+def insert(k):
+	global currentSize
+	H.append(k)
+	# print 'this is H in insert',H
+	# print
+	currentSize = currentSize + 1
+	percUp(currentSize)
 
 def stringToFreq(stringInput):
 	global S, f, n
 
 	S = list(stringInput)
-	S=dict.fromkeys(stringInput).keys()
+	S = dict.fromkeys(stringInput).keys()
 	S.sort()
 	n = len(S)
 
@@ -28,114 +79,79 @@ def stringToFreq(stringInput):
 	for w in S:
 		f.append(stringInput.count(w))
 
-	# adding a zero to the each array to make
-	# indexing easy
 	a = 0
 	f = [a] + f
 	S = [a] + S
-
+	
 	return S, f
 
+inputString="AAABBBBCCDEIIz"
+print 'these are my S and f arrays',stringToFreq(inputString)
+print
 
+################################
+## begin the Huffman tree here##
+################################
 
-print stringToFreq(inputString)
-
-	
 
 def huffmanEncode(S,f):
+	global H
 
 	H = []
 	n = len(f)
 
+	# this for loop makes the min heap
 	for i in range(0,n):
 
 		H.append([S[i],f[i]])
 		H = sorted(H, key=lambda H: H[1])
 
-		print 'this is H',H
-		print
-	while (len(H) > 2):
-		# for k in range(n,2*n):
-
-		# Place a zero at the end of f and s so that
-		# when you run the code it doesn't say 'out of
-		# index'
-		f.append(0)
-		S.append(0)
-		print 'this is H',H
-		print
-
-		# l is the min freq value in H
-		# it is a pair [char, freq]
-		l = H[1]
-		print 'this is l', l
-		print
-		
-		# left is the left child of the tree.
-		# it contains the same value as l
-		left = Tree(H[1])
-		H.remove(H[1])
-		print 'this is left child',left.cargo
-		print
-
-		print 'this is H',H
-		print
-
-		# r is the 2nd min freq value in H
-		# it is a pair [char, freq]
-		r = H[1]
-		print 'this is r',r
-		print
-
-		# right is the right child of the tree.
-		# it contains the same values as r
-		right = Tree(H[1])
-		H.remove(H[1])
-		print 'this is right child',right.cargo
-		print
-
-		# parent combines the two mins so that
-		# [combined char, combined freq]
-		parent = [l[0] + r[0], l[1] + r[1]]
-
-		# tree sets a tree with a left child and right
-		# child
-		tree = Tree(parent, left, right)
-		print 'this is parent',parent
-		print
-
-		# add the new parent node to H
-		H.append(parent)
-
-		# sort H based on the freq value
-		H = sorted(H, key=lambda H: H[1])
-
-		f[n+(n-len(H))-1] = l[1] + r[1]
-		S[n+(n-len(H))-1] = l[0] + r[0]
-
-		print 'this is f',f
-		print
-		print 'this is S',S
-		print
+	return H
 
 
-	comb = []
-	print 'this is n',n
+
+
+H =  huffmanEncode(S,f)
+currentSize = len(H) - 1
+
+# print 'this is my H after huffmanEncode',H
+# print
+
+# i = delMin(H)
+# print 'this is i', i
+# print
+
+# print 'H after delMin called for i',H
+# print
+
+# j = delMin(H)
+# print 'this is j',j
+# print
+
+# print 'H after delMin called for j',H
+# print
+
+# k = [i[0]+j[0],i[1]+j[1]]
+# print 'this is k',k
+
+# insert(k)
+
+# print 'this is H after K insert',H
+# print
+
+while currentSize != 1:
+	print 'this is H:',H
 	print
-	for i in range(0,len(f)):
-		comb.append([S[i],f[i]])
-		print 'this is comb', comb
-		print
-		print 'this is i', i
-		print
+	i = delMin(H)
+	j = delMin(H)
+	k = [i[0]+j[0],i[1]+j[1]]
+	# insert(k)
 
-	# what is codebook T and how do I code it?
-		
+	left = i
+	right = j
+	tree = Tree(k,left,right)
+	insert(tree)
+	
 
-print huffmanEncode(S,f)
-
-# def encodeString(x,T):
-# 	y = []
-# 	for i in range(1,len(x)+1)
-# 		y = y + T[x[i]]
-# 		return y
+print 'this is final H:',H
+print
